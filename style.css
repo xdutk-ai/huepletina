@@ -1,7 +1,7 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #003300; /* Очень темный зеленый */
+    background-color: #ffffff; /* Очень темный зеленый */
     height: 100vh;
     user-select: none; /* Запрет выделения */
     -webkit-user-select: none;
