@@ -38,3 +38,32 @@ body {
     0% { transform: translateY(0) scale(1); opacity: 1; }
     100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
 }
+.controls {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 100;
+}
+
+.cloud-btn {
+    width: 80px;
+    height: 50px;
+    background: #ffffff;
+    border: 2px solid #add8e6;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: #555;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s, background 0.3s;
+}
+
+.cloud-btn:hover {
+    background: #e0f7fa;
+    transform: scale(1.1);
+}
