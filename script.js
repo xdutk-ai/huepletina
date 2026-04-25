@@ -5,8 +5,17 @@ let isDragging = false, isBusy = false, isFlying = false, isInAir = false, isPet
 let velocityX = 0, velocityY = 0, lastX, lastY;
 let alienX = window.innerWidth / 2 - 60, alienY = window.innerHeight / 2 - 60;
 let gravity = 0.8;
-// Тот, кто стоит по умолчанию
+
 let currentCharacter = 'justaguy.png'; 
+
+// Палка
+let stick = null;
+let stickX = 0, stickY = 0;
+let stickVelX = 0, stickVelY = 0;
+let isDraggingStick = false;
+let isChasingStick = false;
+let isHoldingStick = false;        // ← Новая переменная
+let stickLastX = 0, stickLastY = 0;
 
 let inactivityTimer, petTimeout, pettingStartTimer;
 let lastHeartTime = 0;
@@ -15,19 +24,32 @@ document.getElementById('gravitySlider').addEventListener('input', (e) => gravit
 
 function setAlienSrc(src) {
     alienImg.src = src;
-    // Увеличение для определенных скинов
     const largeSkins = ['flyr.png', 'flyl.png', 'neves.png', 'batmanguy.png'];
     alienImg.classList.toggle('large-img', largeSkins.includes(src));
 }
 
-// ФУНКЦИЯ ДЛЯ КНОПОК
 function changeCharacter(name) {
-    console.log("Меняем на:", name);
-    currentCharacter = name; // Запоминаем выбор
-    isBusy = false;          // Прерываем плач/грусть
-    isPetting = false;       // Прерываем глажение
-    setAlienSrc(name);       // Сразу меняем вид
-    resetInactivityTimer();  // Сбрасываем таймер 5 секунд
+    currentCharacter = name;
+    isBusy = false;
+    isPetting = false;
+    isChasingStick = false;
+    isHoldingStick = false;
+    setAlienSrc(name);
+    resetInactivityTimer();
+}
+
+function updateAlienAppearance() {
+    if (isDragging || isPetting || isFlying || isBusy || isChasingStick || isHoldingStick) return;
+    setAlienSrc(isInAir ? 'neves.png' : currentCharacter);
+}
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        if (!isDragging && !isBusy && !isPetting && !isFlying && !isInAir && !isChasingStick && !isHoldingStick) {
+            playAnimation('disapointedguy.png', 2000);
+        }
+    }, 5000);
 }
 
 function playAnimation(src, duration) {
@@ -39,22 +61,7 @@ function playAnimation(src, duration) {
     }, duration);
 }
 
-function updateAlienAppearance() {
-    // Если мы его тащим, гладим или он летит — не возвращаем обычный скин
-    if (isDragging || isPetting || isFlying || isBusy) return;
-    setAlienSrc(isInAir ? 'neves.png' : currentCharacter);
-}
-
-function resetInactivityTimer() {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => {
-        if (!isDragging && !isBusy && !isPetting && !isFlying && !isInAir) {
-            playAnimation('disapointedguy.png', 2000);
-        }
-    }, 5000);
-}
-
-// === СЕРДЕЧКИ ===
+// Сердечки и глажение (без изменений)
 function spawnHeart(index) {
     const heart = document.createElement('div');
     heart.className = 'heart-particle';
@@ -69,7 +76,6 @@ function spawnHeart(index) {
     setTimeout(() => heart.remove(), 1500);
 }
 
-// === ГЛАЖЕНИЕ (2 СЕКУНДЫ) ===
 function handlePetting() {
     if (isDragging || isBusy) return;
     if (!pettingStartTimer) {
@@ -81,7 +87,7 @@ function handlePetting() {
     if (isPetting) {
         let now = Date.now();
         if (now - lastHeartTime > 600) {
-            for(let i = 0; i < 3; i++) { setTimeout(() => spawnHeart(i), i * 100); }
+            for(let i = 0; i < 3; i++) spawnHeart(i);
             lastHeartTime = now;
         }
     }
@@ -98,19 +104,126 @@ function cancelPetting() {
     }
 }
 
-// === ФИЗИКА ===
+// Меню
+const menuBtn = document.getElementById('menu-btn');
+const contextMenu = document.getElementById('context-menu');
+
+menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    contextMenu.style.display = contextMenu.style.display === 'block' ? 'none' : 'block';
+});
+
+document.addEventListener('click', () => contextMenu.style.display = 'none');
+
+// Создание палки
+function spawnStick() {
+    contextMenu.style.display = 'none';
+    if (stick) stick.remove();
+
+    stick = document.createElement('div');
+    stick.id = 'stick';
+    document.body.appendChild(stick);
+
+    stickX = alienX + 100;
+    stickY = alienY + 50;
+    stickVelX = 0;
+    stickVelY = 0;
+
+    stick.style.left = stickX + 'px';
+    stick.style.top = stickY + 'px';
+
+    addStickListeners();
+}
+
+// Физика палки
+function updateStickPhysics() {
+    if (!stick || isDraggingStick) return;
+
+    stickVelY += gravity * 0.75;
+    stickX += stickVelX;
+    stickY += stickVelY;
+
+    stickVelX *= 0.985;
+    stickVelY *= 0.975;
+
+    if (stickX > window.innerWidth) stickX = -60;
+    if (stickX < -60) stickX = window.innerWidth;
+    if (stickY > window.innerHeight) stickY = -30;
+    if (stickY < -30) stickY = window.innerHeight;
+
+    if (stickY + 10 > window.innerHeight - 10) {
+        stickY = window.innerHeight - 20;
+        stickVelY *= -0.62;
+        stickVelX *= 0.78;
+        if (Math.abs(stickVelY) < 1.2) stickVelY = 0;
+    }
+
+    const angle = Math.atan2(stickVelY, stickVelX) * 180 / Math.PI;
+    stick.style.transform = `rotate(${angle}deg)`;
+
+    stick.style.left = stickX + 'px';
+    stick.style.top = stickY + 'px';
+}
+
+function chaseStick() {
+    if (!isChasingStick || !stick || isDraggingStick) return;
+
+    const dx = stickX - (alienX + 60);
+    const dy = stickY - (alienY + 65);
+    const distance = Math.sqrt(dx*dx + dy*dy);
+
+    if (distance < 75) {
+        // ПОЙМАЛ ПАЛКУ
+        stick.remove();
+        stick = null;
+        isChasingStick = false;
+
+        // === Главное исправление ===
+        isHoldingStick = true;
+        setAlienSrc('stickguy.png');
+
+        // Держим 3 секунды
+        setTimeout(() => {
+            isHoldingStick = false;
+            updateAlienAppearance();
+        }, 3000);
+
+        return;
+    }
+
+    // Преследование палки
+    velocityX += dx * 0.004;
+    velocityY += dy * 0.0038;
+
+    const maxSpeed = 13;
+    const speed = Math.sqrt(velocityX*velocityX + velocityY*velocityY);
+    if (speed > maxSpeed) {
+        velocityX = (velocityX / speed) * maxSpeed;
+        velocityY = (velocityY / speed) * maxSpeed;
+    }
+}
+
 function updatePhysics() {
     if (!isDragging) {
-        velocityY += gravity; alienX += velocityX; alienY += velocityY;
-        velocityX *= 0.99; velocityY *= 0.99;
-        
-        let offGround = (alienY + 120 < window.innerHeight);
-        
+        chaseStick();
+        updateStickPhysics();
+
+        velocityY += gravity;
+        alienX += velocityX;
+        alienY += velocityY;
+
+        velocityX *= 0.99;
+        velocityY *= 0.99;
+
+        const offGround = alienY + 120 < window.innerHeight;
+
         if (Math.abs(velocityX) > 10) {
             isFlying = true;
-            if (!isBusy && !isPetting) setAlienSrc(velocityX > 0 ? 'flyr.png' : 'flyl.png');
+            if (!isBusy && !isPetting && !isChasingStick && !isHoldingStick) {
+                setAlienSrc(velocityX > 0 ? 'flyr.png' : 'flyl.png');
+            }
         } else {
-            isFlying = false; 
+            isFlying = false;
             isInAir = offGround;
             updateAlienAppearance();
         }
@@ -121,60 +234,130 @@ function updatePhysics() {
             velocityY *= -0.7;
             velocityX *= 0.8;
         }
-        
+
         if (alienX > window.innerWidth) alienX = -120;
         if (alienX < -120) alienX = window.innerWidth;
         if (alienY > window.innerHeight) alienY = -120;
         if (alienY < -120) alienY = window.innerHeight;
     }
-    alien.style.left = alienX + 'px'; alien.style.top = alienY + 'px';
+
+    alien.style.left = alienX + 'px';
+    alien.style.top = alienY + 'px';
+
     requestAnimationFrame(updatePhysics);
 }
 
-function dragMove(x, y) {
-    if (!isDragging) return;
-    setAlienSrc('cursorguy.png');
-    velocityX = (x - lastX) * 1.5;
-    velocityY = (y - lastY) * 1.5;
-    alienX = x - 60; alienY = y - 60;
-    lastX = x; lastY = y;
+// Бросок палки
+function addStickListeners() {
+    if (!stick) return;
+
+    stick.addEventListener('mousedown', (e) => {
+        isDraggingStick = true;
+        isChasingStick = false;
+        stickLastX = e.clientX;
+        stickLastY = e.clientY;
+        stick.style.transition = 'none';
+    });
+
+    stick.addEventListener('touchstart', (e) => {
+        isDraggingStick = true;
+        isChasingStick = false;
+        stickLastX = e.touches[0].clientX;
+        stickLastY = e.touches[0].clientY;
+        stick.style.transition = 'none';
+        e.preventDefault();
+    }, {passive: false});
 }
 
-// СОБЫТИЯ
-window.addEventListener('mousemove', (e) => {
+document.addEventListener('mousemove', (e) => {
     resetInactivityTimer();
-    if (isDragging) dragMove(e.clientX, e.clientY);
+    if (isDragging) {
+        setAlienSrc('cursorguy.png');
+        velocityX = (e.clientX - lastX) * 1.5;
+        velocityY = (e.clientY - lastY) * 1.5;
+        alienX = e.clientX - 60;
+        alienY = e.clientY - 60;
+        lastX = e.clientX;
+        lastY = e.clientY;
+    } 
+    else if (isDraggingStick && stick) {
+        stickX = e.clientX - 29;
+        stickY = e.clientY - 5;
+        stick.style.left = stickX + 'px';
+        stick.style.top = stickY + 'px';
+    }
+});
+
+document.addEventListener('mouseup', (e) => {
+    if (isDraggingStick && stick) {
+        stickVelX = (e.clientX - stickLastX) * 0.25;
+        stickVelY = (e.clientY - stickLastY) * 0.25;
+
+        isDraggingStick = false;
+        isChasingStick = true;
+        stick.style.transition = 'transform 0.05s linear';
+    }
+    isDragging = false;
+    updateAlienAppearance();
+});
+
+document.addEventListener('touchmove', (e) => {
+    resetInactivityTimer();
+    if (isDragging) {
+        const tx = e.touches[0].clientX;
+        const ty = e.touches[0].clientY;
+        setAlienSrc('cursorguy.png');
+        velocityX = (tx - lastX) * 1.5;
+        velocityY = (ty - lastY) * 1.5;
+        alienX = tx - 60;
+        alienY = ty - 60;
+        lastX = tx;
+        lastY = ty;
+        e.preventDefault();
+    } 
+    else if (isDraggingStick && stick) {
+        stickX = e.touches[0].clientX - 29;
+        stickY = e.touches[0].clientY - 5;
+        stick.style.left = stickX + 'px';
+        stick.style.top = stickY + 'px';
+    }
+}, {passive: false});
+
+document.addEventListener('touchend', (e) => {
+    if (isDraggingStick && stick) {
+        const tx = e.changedTouches[0].clientX;
+        const ty = e.changedTouches[0].clientY;
+
+        stickVelX = (tx - stickLastX) * 0.25;
+        stickVelY = (ty - stickLastY) * 0.25;
+
+        isDraggingStick = false;
+        isChasingStick = true;
+        stick.style.transition = 'transform 0.05s linear';
+    }
+    isDragging = false;
+    updateAlienAppearance();
+});
+
+// События пришельца
+alien.addEventListener('mousedown', (e) => { 
+    isDragging = true; 
+    isPetting = false;
+    playAnimation('angruguy.png', 3000); 
+    lastX = e.clientX; 
+    lastY = e.clientY; 
 });
 
 alien.addEventListener('mousemove', handlePetting);
 alien.addEventListener('mouseleave', cancelPetting);
 
-alien.addEventListener('mousedown', (e) => { 
-    isDragging = true; isPetting = false;
-    playAnimation('angruguy.png', 3000); 
-    lastX = e.clientX; lastY = e.clientY; 
-});
-
-window.addEventListener('mouseup', () => { 
-    isDragging = false; 
-    updateAlienAppearance(); 
-});
-
-// Touch адаптация
 alien.addEventListener('touchstart', (e) => { 
-    isDragging = true; isPetting = false;
+    isDragging = true; 
+    isPetting = false;
     playAnimation('angruguy.png', 3000); 
-    lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; 
+    lastX = e.touches[0].clientX; 
+    lastY = e.touches[0].clientY; 
 }, {passive: false});
-
-window.addEventListener('touchmove', (e) => {
-    resetInactivityTimer();
-    if (isDragging) dragMove(e.touches[0].clientX, e.touches[0].clientY);
-    else handlePetting();
-    if (isDragging) e.preventDefault();
-}, {passive: false});
-
-window.addEventListener('touchend', () => { isDragging = false; updateAlienAppearance(); });
 
 updatePhysics();
 resetInactivityTimer();

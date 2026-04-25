@@ -2,7 +2,6 @@ body {
     margin: 0;
     overflow: hidden;
     background-color: #ffffff;
-    /* Убираем 100vh, заменяем на fill-available для поддержки мобильных */
     height: 100vh;
     height: -webkit-fill-available;
     width: 100vw;
@@ -27,8 +26,11 @@ body {
     transition: transform 0.2s;
 }
 
-.large-img { transform: scale(1.2); }
+.large-img { 
+    transform: scale(1.2); 
+}
 
+/* Панель кнопок */
 .controls {
     position: fixed;
     right: 20px;
@@ -53,8 +55,13 @@ body {
     transition: all 0.3s;
 }
 
-.cloud-btn:hover { transform: scale(1.1); background: #5ea1ff; color: #ffffff; }
+.cloud-btn:hover { 
+    transform: scale(1.1); 
+    background: #5ea1ff; 
+    color: #ffffff; 
+}
 
+/* Гравитация */
 .gravity-control {
     position: fixed;
     left: 20px;
@@ -66,11 +73,80 @@ body {
     z-index: 100;
 }
 
+/* Кнопка с тремя точками */
+.menu-btn {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: #ffffff;
+    border: none;
+    border-radius: 50%;
+    font-size: 28px;
+    color: #5ea1ff;
+    box-shadow: 0 6px 15px rgba(94, 161, 255, 0.25);
+    cursor: pointer;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.menu-btn:hover {
+    transform: scale(1.1);
+    background: #5ea1ff;
+    color: white;
+}
+
+/* Контекстное меню */
+.context-menu {
+    position: fixed;
+    top: 75px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    padding: 8px 0;
+    z-index: 300;
+    display: none;
+    min-width: 180px;
+}
+
+.context-menu button {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+    color: #333;
+}
+
+.context-menu button:hover {
+    background: #f0f7ff;
+    color: #5ea1ff;
+}
+
+/* Сердечки */
+.heart-particle {
+    position: absolute;
+    z-index: 1000;
+    pointer-events: none;
+    font-size: 24px;
+    animation: fancyHeart 1.5s ease-out forwards;
+}
+
+@keyframes fancyHeart {
+    0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+    20% { transform: translateY(-20px) scale(1.2) rotate(15deg); opacity: 1; }
+    100% { transform: translateY(-100px) scale(1) rotate(-15deg); opacity: 0; filter: blur(2px); }
+}
+
 /* Мобильная адаптация */
-/* Мобильная адаптация для устройств до 800px */
-/* Мобильная адаптация: всё управление сверху */
 @media (max-width: 800px) {
-    /* Панель кнопок (верхний ряд) */
     .controls {
         position: fixed !important;
         top: 10px !important;
@@ -81,74 +157,58 @@ body {
         grid-template-columns: repeat(4, 1fr);
         gap: 5px !important;
         width: auto !important;
-        z-index: 100 !important;
     }
 
     .cloud-btn {
-        height: 30px !important; /* Еще компактнее */
+        height: 30px !important;
         font-size: 9px !important;
         border-radius: 10px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
     }
 
-    /* Слайдер гравитации (сразу под кнопками) */
     .gravity-control {
         position: fixed !important;
-        top: 50px !important; /* Спускаем чуть ниже кнопок */
-        bottom: auto !important; /* Убираем с низа */
+        top: 50px !important;
+        bottom: auto !important;
         left: 10px !important;
         right: 10px !important;
         padding: 5px 12px !important;
         border-radius: 10px !important;
         font-size: 10px !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        background: rgba(255, 255, 255, 0.9) !important; /* Чуть прозрачный фон */
-        backdrop-filter: blur(5px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
     }
 
-    /* Делаем сам ползунок тонким и маленьким */
-    .gravity-control input[type=range] {
-        height: 15px;
-        flex-grow: 1;
-        cursor: pointer;
+    .menu-btn {
+        top: 8px;
+        right: 12px;
+        width: 42px;
+        height: 42px;
+        font-size: 24px;
     }
-
-    /* Немного уменьшим текст "Gravity" */
-    .gravity-control label {
-        font-size: 9px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #888;
+    
+    .context-menu {
+        top: 60px;
+        right: 12px;
     }
 }
-.cloud-btn {
-    touch-action: manipulation;
-    /* Убирает задержку нажатия на тач-экранах */
-    -webkit-tap-highlight-color: transparent;
-}
-.heart-particle {
+/* Красивая палка */
+#stick {
     position: absolute;
-    z-index: 1000;
-    pointer-events: none;
-    font-size: 24px;
-    animation: fancyHeart 1.5s ease-out forwards;
+    width: 58px;
+    height: 10px;
+    background: linear-gradient(90deg, #8B5A2B, #A67C5D, #8B5A2B);
+    border-radius: 5px;
+    box-shadow: 
+        3px 4px 8px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(255,255,255,0.3),
+        inset 0 -2px 4px rgba(0,0,0,0.4);
+    z-index: 20;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.05s linear;
 }
 
-@keyframes fancyHeart {
-    0% {
-        transform: translateY(0) scale(0.5) rotate(0deg);
-        opacity: 0;
-    }
-    20% {
-        transform: translateY(-20px) scale(1.2) rotate(15deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100px) scale(1) rotate(-15deg);
-        opacity: 0;
-        filter: blur(2px);
-    }
+#stick:active {
+    cursor: grabbing;
+    box-shadow: 
+        2px 3px 6px rgba(0, 0, 0, 0.5),
+        inset 0 1px 3px rgba(255,255,255,0.4);
 }

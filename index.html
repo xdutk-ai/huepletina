@@ -10,16 +10,25 @@
     <div id="alien">
         <img id="alien-img" src="justaguy.png" alt="Пришелец">
     </div>
+
+    <button id="menu-btn" class="menu-btn">⋮</button>
+
     <div class="controls">
         <button class="cloud-btn" onclick="changeCharacter('justaguy.png')">Just</button>
         <button class="cloud-btn" onclick="changeCharacter('dogguuy.png')">Dog</button>
         <button class="cloud-btn" onclick="changeCharacter('batmanguy.png')">Bat</button>
         <button class="cloud-btn" onclick="changeCharacter('spongeguy.png')">Sponge</button>
     </div>
+
     <div class="gravity-control">
         <label>Гравитация:</label>
         <input type="range" id="gravitySlider" min="0" max="2" step="0.1" value="0.8">
     </div>
+
+    <div id="context-menu" class="context-menu">
+        <button onclick="spawnStick()">Заспавнить палку</button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
