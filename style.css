@@ -78,3 +78,31 @@ body {
     .cloud-btn { width: 70px; height: 40px; font-size: 11px; }
     .gravity-control { left: 10px; right: 10px; bottom: 10px; text-align: center; }
 }
+/* Твой исходный код оставляешь как был, ниже добавляешь только это: */
+
+@media (max-width: 800px) {
+    body { touch-action: none; }
+    
+    .controls {
+        top: auto;
+        bottom: 120px;
+        right: 10px;
+        left: 10px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .cloud-btn {
+        width: 70px;
+        height: 45px;
+        font-size: 11px;
+    }
+
+    .gravity-control {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+    }
+}
