@@ -78,31 +78,38 @@ body {
     .cloud-btn { width: 70px; height: 40px; font-size: 11px; }
     .gravity-control { left: 10px; right: 10px; bottom: 10px; text-align: center; }
 }
-/* Твой исходный код оставляешь как был, ниже добавляешь только это: */
-
-@media (max-width: 800px) {
-    body { touch-action: none; }
-    
+@media (max-width: 768px) {
+    /* Переносим кнопки вверх */
     .controls {
-        top: auto;
-        bottom: 120px;
+        position: fixed;
+        top: 10px;
         right: 10px;
         left: 10px;
+        transform: none; /* Убираем центрирование через translateY */
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 10px;
+        gap: 5px;
     }
 
+    /* Делаем кнопки меньше */
     .cloud-btn {
         width: 70px;
-        height: 45px;
-        font-size: 11px;
+        height: 35px;
+        font-size: 10px;
+        margin-bottom: 5px;
     }
 
+    /* Делаем слайдер компактнее */
     .gravity-control {
         left: 10px;
         right: 10px;
         bottom: 10px;
+        padding: 10px;
+    }
+
+    input[type=range] {
+        width: 100%; /* Занимает всю ширину блока */
+        height: 8px;
     }
 }
