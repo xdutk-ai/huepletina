@@ -5,6 +5,7 @@ body {
     height: 100vh;
     user-select: none;
     font-family: 'Segoe UI', sans-serif;
+    touch-action: none; /* Запрещает браузеру зумить и скроллить при касании */
 }
 
 #alien {
@@ -23,9 +24,7 @@ body {
     transition: transform 0.2s;
 }
 
-.large-img {
-    transform: scale(1.2);
-}
+.large-img { transform: scale(1.2); }
 
 .controls {
     position: fixed;
@@ -34,71 +33,48 @@ body {
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 15px;
     z-index: 100;
 }
 
 .cloud-btn {
     width: 140px;
-    height: 65px;
+    height: 60px;
     background: #ffffff;
     border: none;
-    border-radius: 35px;
+    border-radius: 30px;
     cursor: pointer;
     font-weight: bold;
     color: #5ea1ff;
     box-shadow: 0 8px 15px rgba(94, 161, 255, 0.2);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    margin-bottom: 10px;
+    transition: all 0.3s;
 }
 
-.cloud-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 15px 25px rgba(94, 161, 255, 0.4);
-    color: #ffffff;
-    background: #5ea1ff;
-}
+.cloud-btn:hover { transform: scale(1.1); background: #5ea1ff; color: #ffffff; }
 
 .gravity-control {
     position: fixed;
     left: 20px;
     bottom: 20px;
     background: #ffffff;
-    padding: 20px;
-    border-radius: 25px;
+    padding: 15px;
+    border-radius: 20px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     z-index: 100;
-    color: #555;
-    font-weight: bold;
 }
 
-input[type=range] {
-  -webkit-appearance: none;
-  width: 150px;
-  height: 10px;
-  background: #e0e7ff;
-  border-radius: 5px;
-  outline: none;
-  margin-top: 15px;
-  transition: background 0.3s;
-}
-
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    background: #5ea1ff;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(94, 161, 255, 0.4);
-    transition: transform 0.2s, background 0.2s;
-}
-
-input[type=range]::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    background: #4a8df8;
-}
-
-input[type=range]:active::-webkit-slider-thumb {
-    transform: scale(0.9);
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .controls {
+        top: auto;
+        bottom: 100px;
+        right: 10px;
+        left: 10px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .cloud-btn { width: 70px; height: 40px; font-size: 11px; }
+    .gravity-control { left: 10px; right: 10px; bottom: 10px; text-align: center; }
 }
