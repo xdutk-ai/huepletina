@@ -24,11 +24,9 @@ body {
     pointer-events: none;
 }
 
-.large-img { 
-    transform: scale(1.2); 
-}
+.large-img { transform: scale(1.2); }
 
-/* ==================== КНОПКА МЕНЮ ==================== */
+/* Кнопка меню */
 .menu-btn {
     position: fixed;
     top: 16px;
@@ -52,10 +50,9 @@ body {
     transform: scale(1.12) rotate(15deg);
     background: #5ea1ff;
     color: white;
-    box-shadow: 0 10px 25px rgba(94, 161, 255, 0.4);
 }
 
-/* ==================== ДЕСКТОПНЫЕ КНОПКИ ==================== */
+/* Десктопные кнопки */
 .controls {
     position: fixed;
     right: 24px;
@@ -78,84 +75,17 @@ body {
     font-size: 15px;
     color: #5ea1ff;
     box-shadow: 0 10px 25px rgba(94, 161, 255, 0.18),
-                inset 0 -4px 8px rgba(255,255,255,0.6),
-                inset 0 4px 8px rgba(0,0,0,0.06);
+                inset 0 -4px 8px rgba(255,255,255,0.6);
     transition: all 0.3s ease;
-    letter-spacing: 0.3px;
 }
 
 .cloud-btn:hover {
     transform: translateY(-3px) scale(1.05);
     background: linear-gradient(145deg, #5ea1ff, #4a8cff);
     color: white;
-    box-shadow: 0 14px 30px rgba(94, 161, 255, 0.35);
 }
 
-/* ==================== КРАСИВЫЙ СЛАЙДЕР ГРАВИТАЦИИ ==================== */
-.gravity-control {
-    position: fixed;
-    left: 20px;
-    bottom: 20px;
-    background: #ffffff;
-    padding: 16px 22px;
-    border-radius: 24px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-size: 14.5px;
-    color: #555;
-    min-width: 260px;
-}
-
-.gravity-control label {
-    font-weight: 600;
-    color: #666;
-    white-space: nowrap;
-}
-
-/* Стилизация слайдера */
-.gravity-control input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 8px;
-    background: #e0e7ff;
-    border-radius: 9999px;
-    outline: none;
-    cursor: pointer;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
-}
-
-.gravity-control input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    background: linear-gradient(#5ea1ff, #4a8cff);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(94, 161, 255, 0.4),
-                0 2px 4px rgba(0,0,0,0.2);
-    border: 3px solid white;
-    transition: all 0.2s ease;
-}
-
-.gravity-control input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 6px 16px rgba(94, 161, 255, 0.5);
-}
-
-.gravity-control input[type="range"]::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    background: linear-gradient(#5ea1ff, #4a8cff);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(94, 161, 255, 0.4);
-    border: 3px solid white;
-}
-
-/* ==================== КОНТЕКСТНОЕ МЕНЮ ==================== */
+/* Контекстное меню */
 .context-menu {
     position: fixed;
     top: 85px;
@@ -166,7 +96,7 @@ body {
     padding: 12px 0;
     z-index: 300;
     display: none;
-    min-width: 210px;
+    min-width: 220px;
     overflow: hidden;
 }
 
@@ -195,25 +125,58 @@ body {
     border-top: 1px solid #e5e7eb;
 }
 
-/* ==================== ПАЛКА ==================== */
+/* Слайдер внутри меню (для телефонов) */
+.menu-gravity {
+    padding: 12px 20px;
+}
+
+.menu-gravity label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+    font-size: 15px;
+}
+
+.menu-gravity input[type="range"] {
+    width: 100%;
+    height: 8px;
+    background: #e0e7ff;
+    border-radius: 9999px;
+    outline: none;
+    cursor: pointer;
+}
+
+.menu-gravity input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #5ea1ff;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 3px 8px rgba(94, 161, 255, 0.4);
+}
+
+/* Палка */
 #stick {
     position: absolute;
     width: 58px;
     height: 10px;
     background: linear-gradient(90deg, #8B5A2B, #A67C5D, #8B5A2B);
     border-radius: 5px;
-    box-shadow: 
-        3px 5px 10px rgba(0, 0, 0, 0.35),
-        inset 0 2px 4px rgba(255,255,255,0.35),
-        inset 0 -2px 4px rgba(0,0,0,0.3);
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.35),
+                inset 0 2px 4px rgba(255,255,255,0.35);
     z-index: 20;
     cursor: grab;
-    user-select: none;
 }
 
-/* ==================== МОБИЛЬНАЯ АДАПТАЦИЯ ==================== */
+/* Мобильная адаптация */
 @media (max-width: 900px) {
     .controls#desktop-controls {
+        display: none !important;
+    }
+
+    .gravity-control {  /* Скрываем старый слайдер */
         display: none !important;
     }
 
@@ -228,34 +191,11 @@ body {
     .context-menu {
         top: 78px;
         right: 14px;
-        min-width: 230px;
-        border-radius: 20px;
-    }
-
-    .context-menu button {
-        padding: 16px 24px;
-        font-size: 17px;
-    }
-
-    .gravity-control {
-        left: 14px;
-        right: 14px;
-        bottom: 14px;
-        padding: 14px 20px;
-        min-width: auto;
-    }
-
-    .gravity-control input[type="range"] {
-        width: 240px;
-    }
-
-    #alien {
-        width: 110px;
-        height: 110px;
+        min-width: 240px;
     }
 }
 
-/* ==================== СЕРДЕЧКИ ==================== */
+/* Сердечки */
 .heart-particle {
     position: absolute;
     z-index: 1000;
@@ -265,7 +205,7 @@ body {
 }
 
 @keyframes fancyHeart {
-    0%   { transform: translateY(0) scale(0.4) rotate(0deg); opacity: 0; }
-    25%  { transform: translateY(-30px) scale(1.25) rotate(20deg); opacity: 1; }
+    0% { transform: translateY(0) scale(0.4) rotate(0deg); opacity: 0; }
+    25% { transform: translateY(-30px) scale(1.25) rotate(20deg); opacity: 1; }
     100% { transform: translateY(-120px) scale(0.95) rotate(-20deg); opacity: 0; }
 }

@@ -360,3 +360,13 @@ alien.addEventListener('touchstart', (e) => {
 
 updatePhysics();
 resetInactivityTimer();
+// Обновление значения гравитации в меню
+const gravitySlider = document.getElementById('gravitySlider');
+const gravityValue = document.getElementById('gravityValue');
+
+if (gravitySlider && gravityValue) {
+    gravitySlider.addEventListener('input', (e) => {
+        gravity = parseFloat(e.target.value);
+        gravityValue.textContent = gravity.toFixed(1);
+    });
+}
