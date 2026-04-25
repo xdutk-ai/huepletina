@@ -1,5 +1,7 @@
 const alien = document.getElementById('alien');
 const alienImg = document.getElementById('alien-img');
+const menuBtn = document.getElementById('menu-btn');
+const contextMenu = document.getElementById('context-menu');
 
 let isDragging = false, isBusy = false, isFlying = false, isInAir = false, isPetting = false;
 let velocityX = 0, velocityY = 0, lastX, lastY;
@@ -14,7 +16,7 @@ let stickX = 0, stickY = 0;
 let stickVelX = 0, stickVelY = 0;
 let isDraggingStick = false;
 let isChasingStick = false;
-let isHoldingStick = false;        // ← Новая переменная
+let isHoldingStick = false;
 let stickLastX = 0, stickLastY = 0;
 
 let inactivityTimer, petTimeout, pettingStartTimer;
@@ -36,6 +38,16 @@ function changeCharacter(name) {
     isHoldingStick = false;
     setAlienSrc(name);
     resetInactivityTimer();
+    contextMenu.style.display = 'none';
+}
+
+function playAnimation(src, duration) {
+    isBusy = true;
+    setAlienSrc(src);
+    setTimeout(() => { 
+        isBusy = false; 
+        updateAlienAppearance(); 
+    }, duration);
 }
 
 function updateAlienAppearance() {
@@ -52,16 +64,6 @@ function resetInactivityTimer() {
     }, 5000);
 }
 
-function playAnimation(src, duration) {
-    isBusy = true;
-    setAlienSrc(src);
-    setTimeout(() => { 
-        isBusy = false; 
-        updateAlienAppearance(); 
-    }, duration);
-}
-
-// Сердечки и глажение (без изменений)
 function spawnHeart(index) {
     const heart = document.createElement('div');
     heart.className = 'heart-particle';
@@ -105,27 +107,27 @@ function cancelPetting() {
 }
 
 // Меню
-const menuBtn = document.getElementById('menu-btn');
-const contextMenu = document.getElementById('context-menu');
-
 menuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     contextMenu.style.display = contextMenu.style.display === 'block' ? 'none' : 'block';
 });
 
-document.addEventListener('click', () => contextMenu.style.display = 'none');
-
-// Создание палки
-function spawnStick() {
+document.addEventListener('click', () => {
     contextMenu.style.display = 'none';
+});
+
+// СПАВН ПАЛКИ
+window.spawnStick = function() {
+    contextMenu.style.display = 'none';
+
     if (stick) stick.remove();
 
     stick = document.createElement('div');
     stick.id = 'stick';
     document.body.appendChild(stick);
 
-    stickX = alienX + 100;
-    stickY = alienY + 50;
+    stickX = alienX + 120;
+    stickY = alienY + 45;
     stickVelX = 0;
     stickVelY = 0;
 
@@ -133,7 +135,8 @@ function spawnStick() {
     stick.style.top = stickY + 'px';
 
     addStickListeners();
-}
+    console.log("Палка заспавнена в позиции:", stickX, stickY);
+};
 
 // Физика палки
 function updateStickPhysics() {
@@ -173,16 +176,13 @@ function chaseStick() {
     const distance = Math.sqrt(dx*dx + dy*dy);
 
     if (distance < 75) {
-        // ПОЙМАЛ ПАЛКУ
         stick.remove();
         stick = null;
         isChasingStick = false;
 
-        // === Главное исправление ===
         isHoldingStick = true;
         setAlienSrc('stickguy.png');
 
-        // Держим 3 секунды
         setTimeout(() => {
             isHoldingStick = false;
             updateAlienAppearance();
@@ -191,7 +191,6 @@ function chaseStick() {
         return;
     }
 
-    // Преследование палки
     velocityX += dx * 0.004;
     velocityY += dy * 0.0038;
 
@@ -247,7 +246,6 @@ function updatePhysics() {
     requestAnimationFrame(updatePhysics);
 }
 
-// Бросок палки
 function addStickListeners() {
     if (!stick) return;
 
@@ -269,6 +267,7 @@ function addStickListeners() {
     }, {passive: false});
 }
 
+// События мыши и тача
 document.addEventListener('mousemove', (e) => {
     resetInactivityTimer();
     if (isDragging) {

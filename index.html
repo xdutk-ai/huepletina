@@ -13,7 +13,8 @@
 
     <button id="menu-btn" class="menu-btn">⋮</button>
 
-    <div class="controls">
+    <!-- Десктопные кнопки -->
+    <div class="controls" id="desktop-controls">
         <button class="cloud-btn" onclick="changeCharacter('justaguy.png')">Just</button>
         <button class="cloud-btn" onclick="changeCharacter('dogguuy.png')">Dog</button>
         <button class="cloud-btn" onclick="changeCharacter('batmanguy.png')">Bat</button>
@@ -25,7 +26,13 @@
         <input type="range" id="gravitySlider" min="0" max="2" step="0.1" value="0.8">
     </div>
 
+    <!-- Меню -->
     <div id="context-menu" class="context-menu">
+        <button onclick="changeCharacter('justaguy.png')">Just Guy</button>
+        <button onclick="changeCharacter('dogguuy.png')">Dog</button>
+        <button onclick="changeCharacter('batmanguy.png')">Bat</button>
+        <button onclick="changeCharacter('spongeguy.png')">Sponge</button>
+        <hr>
         <button onclick="spawnStick()">Заспавнить палку</button>
     </div>
 
