@@ -327,8 +327,8 @@ document.addEventListener('touchend', (e) => {
         const tx = e.changedTouches[0].clientX;
         const ty = e.changedTouches[0].clientY;
 
-        stickVelX = (tx - stickLastX) * 0.25;
-        stickVelY = (ty - stickLastY) * 0.25;
+        stickVelX = (tx - stickLastX) * 0.15;
+        stickVelY = (ty - stickLastY) * 0.15;
 
         isDraggingStick = false;
         isChasingStick = true;
