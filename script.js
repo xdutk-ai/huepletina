@@ -1,146 +1,90 @@
 const alien = document.getElementById('alien');
 const alienImg = document.getElementById('alien-img');
 
-let isDragging = false, isCrying = false, isAngry = false, isStroking = false;
-let afkTimeout, strokeCount = 0, heartInterval;
+let isDragging = false, isBusy = false, isFlying = false, isInAir = false;
 let velocityX = 0, velocityY = 0, lastX, lastY;
 let alienX = window.innerWidth / 2 - 60, alienY = window.innerHeight / 2 - 60;
+let gravity = 0.8, currentCharacter = 'justaguy.png';
 
-// Глобальная переменная для хранения текущего выбранного персонажа
-let currentCharacter = 'justaguy.png';
+document.getElementById('gravitySlider').addEventListener('input', (e) => gravity = parseFloat(e.target.value));
 
-// Функция смены персонажа через кнопки
-function changeCharacter(imageName) {
-    currentCharacter = imageName;
-    if (!isDragging && !isCrying && !isAngry && !isStroking) {
-        alienImg.src = currentCharacter;
-    }
+function setAlienSrc(src) {
+    alienImg.src = src;
+    if (src === 'flyr.png' || src === 'flyl.png' || src === 'neves.png') alienImg.classList.add('large-img');
+    else alienImg.classList.remove('large-img');
+}
+
+// Универсальная смена с приоритетом
+function playAnimation(src, duration) {
+    isBusy = true;
+    setAlienSrc(src);
+    setTimeout(() => {
+        isBusy = false;
+        if (!isDragging) updateAlienAppearance();
+    }, duration);
+}
+
+// Логика текущего вида
+function updateAlienAppearance() {
+    if (isBusy) return;
+    if (isFlying) return; // Полет управляется физикой
+    setAlienSrc(isInAir ? 'neves.png' : currentCharacter);
+}
+
+function changeCharacter(name) {
+    currentCharacter = name;
+    if (!isBusy) updateAlienAppearance();
 }
 
 function updatePhysics() {
     if (!isDragging) {
-        velocityY += 0.8; // Гравитация
-        alienX += velocityX; 
-        alienY += velocityY;
-        velocityX *= 0.99; 
-        velocityY *= 0.99;
+        velocityY += gravity; alienX += velocityX; alienY += velocityY;
+        velocityX *= 0.99; velocityY *= 0.99;
 
-        // Пол
-        if (alienY + 120 > window.innerHeight) {
-            alienY = window.innerHeight - 120;
-            if (Math.abs(velocityY) > 5) triggerCry();
-            velocityY *= -0.7;
+        let offGround = (alienY + 120 < window.innerHeight);
+        if (Math.abs(velocityX) > 10) {
+            isFlying = true;
+            if (!isBusy) setAlienSrc(velocityX > 0 ? 'flyr.png' : 'flyl.png');
+        } else {
+            isFlying = false;
+            isInAir = offGround;
+            updateAlienAppearance();
         }
 
-        // Порталы
+        if (alienY + 120 > window.innerHeight) {
+            alienY = window.innerHeight - 120;
+            if (Math.abs(velocityY) > 5) playAnimation('cryingguy.png', 3000); // Плач 3 сек
+            velocityY *= -0.7;
+        }
         if (alienX > window.innerWidth) alienX = -120;
         if (alienX < -120) alienX = window.innerWidth;
         if (alienY < -120) alienY = window.innerHeight;
     }
-    alien.style.left = alienX + 'px';
-    alien.style.top = alienY + 'px';
+    alien.style.left = alienX + 'px'; alien.style.top = alienY + 'px';
     requestAnimationFrame(updatePhysics);
 }
 
-function triggerCry() {
-    if (isCrying || isDragging || isAngry) return;
-    isCrying = true;
-    alienImg.src = 'cryingguy.png';
-    setTimeout(() => { 
-        isCrying = false; 
-        if(!isDragging && !isAngry && !isStroking) alienImg.src = currentCharacter; 
-    }, 800);
-}
+alien.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    playAnimation('angruguy.png', 3000); // Злой 3 сек
+    lastX = e.clientX; lastY = e.clientY;
+    window.addEventListener('mousemove', dragHandler);
+    window.addEventListener('mouseup', dropHandler);
+});
 
-function setAfk() { 
-    if (!isDragging && !isCrying && !isAngry && !isStroking) {
-        alienImg.src = 'disapointedguy.png'; 
-    }
-}
-
-function resetAfkTimer() {
-    clearTimeout(afkTimeout);
-    if (!isDragging && !isCrying && !isAngry && !isStroking) {
-        alienImg.src = currentCharacter;
-    }
-    afkTimeout = setTimeout(setAfk, 5000);
-}
-
-function createHeart() {
-    const heart = document.createElement('div');
-    heart.className = 'heart';
-    heart.innerHTML = '❤️';
-    heart.style.left = (alienX + 45 + Math.random() * 30) + 'px';
-    heart.style.top = (alienY - 10) + 'px';
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 1500);
-}
-
-// Обработчики перетаскивания (Drag & Drop)
 function dragHandler(e) {
-    if (isDragging) {
-        alienImg.src = 'cursorguy.png';
-        velocityX = (e.clientX - lastX) * 1.5; 
-        velocityY = (e.clientY - lastY) * 1.5;
-        alienX = e.clientX - 60; 
-        alienY = e.clientY - 60;
-        lastX = e.clientX; 
-        lastY = e.clientY;
-    }
+    setAlienSrc('cursorguy.png');
+    velocityX = (e.clientX - lastX) * 1.5;
+    velocityY = (e.clientY - lastY) * 1.5;
+    alienX = e.clientX - 60; alienY = e.clientY - 60;
+    lastX = e.clientX; lastY = e.clientY;
 }
 
 function dropHandler() {
-    if (isDragging) {
-        isDragging = false; 
-        alienImg.src = currentCharacter;
-        window.removeEventListener('mousemove', dragHandler);
-        window.removeEventListener('mouseup', dropHandler);
-    }
+    isDragging = false;
+    window.removeEventListener('mousemove', dragHandler);
+    window.removeEventListener('mouseup', dropHandler);
+    if (!isBusy) updateAlienAppearance();
 }
 
-alien.addEventListener('mousedown', (e) => {
-    isDragging = true; 
-    isAngry = true;
-    alienImg.src = 'angruguy.png';
-    lastX = e.clientX; 
-    lastY = e.clientY;
-    window.addEventListener('mousemove', dragHandler);
-    window.addEventListener('mouseup', dropHandler);
-    
-    setTimeout(() => { 
-        isAngry = false; 
-        if(!isDragging && !isCrying) alienImg.src = currentCharacter; 
-    }, 2000);
-});
-
-// Отслеживание поглаживания (когда мышь наведена на персонажа)
-alien.addEventListener('mousemove', (e) => {
-    if (!isDragging) {
-        strokeCount++;
-        if (strokeCount > 40 && !isAngry && !isCrying && !isStroking) {
-            isStroking = true;
-            alienImg.src = 'chillguy.png';
-            alien.style.transform = "scale(1.1)";
-            heartInterval = setInterval(createHeart, 200);
-        }
-    }
-});
-
-alien.addEventListener('mouseleave', () => {
-    strokeCount = 0;
-    if(isStroking) {
-        isStroking = false;
-        clearInterval(heartInterval);
-        alien.style.transform = "scale(1)";
-        alienImg.src = currentCharacter;
-    }
-});
-
-// Глобальное отслеживание мыши для AFK
-window.addEventListener('mousemove', () => {
-    resetAfkTimer();
-});
-
-// Инициализация
 updatePhysics();
-resetAfkTimer();
