@@ -68,52 +68,60 @@ body {
 
 /* Мобильная адаптация */
 /* Мобильная адаптация для устройств до 800px */
+/* Мобильная адаптация: всё управление сверху */
 @media (max-width: 800px) {
-    /* Верхняя панель с кнопками */
+    /* Панель кнопок (верхний ряд) */
     .controls {
         position: fixed !important;
         top: 10px !important;
-        left: 0 !important;
-        right: 0 !important;
+        left: 10px !important;
+        right: 10px !important;
         transform: none !important;
         display: grid !important;
-        grid-template-columns: repeat(4, 1fr); /* 4 кнопки в ряд */
-        gap: 6px !important;
-        padding: 0 10px !important;
-        width: 100% !important;
-        box-sizing: border-box;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px !important;
+        width: auto !important;
         z-index: 100 !important;
     }
 
     .cloud-btn {
-        width: 100% !important; /* Занимает всю ячейку грида */
-        height: 35px !important;
+        height: 30px !important; /* Еще компактнее */
         font-size: 9px !important;
-        border-radius: 15px !important;
-        margin: 0 !important;
-        padding: 0 2px !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
     }
 
-    /* Нижняя панель с гравитацией */
+    /* Слайдер гравитации (сразу под кнопками) */
     .gravity-control {
         position: fixed !important;
-        bottom: 10px !important;
-        left: 20px !important;
-        right: 20px !important;
-        top: auto !important;
-        padding: 8px 15px !important;
-        border-radius: 15px !important;
+        top: 50px !important; /* Спускаем чуть ниже кнопок */
+        bottom: auto !important; /* Убираем с низа */
+        left: 10px !important;
+        right: 10px !important;
+        padding: 5px 12px !important;
+        border-radius: 10px !important;
+        font-size: 10px !important;
         display: flex !important;
         align-items: center !important;
-        gap: 10px !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
-        font-size: 12px !important;
+        gap: 8px !important;
+        background: rgba(255, 255, 255, 0.9) !important; /* Чуть прозрачный фон */
+        backdrop-filter: blur(5px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
     }
-    
-    /* Делаем слайдер компактным */
-    input[type=range] {
+
+    /* Делаем сам ползунок тонким и маленьким */
+    .gravity-control input[type=range] {
+        height: 15px;
         flex-grow: 1;
+        cursor: pointer;
+    }
+
+    /* Немного уменьшим текст "Gravity" */
+    .gravity-control label {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #888;
     }
 }
 .cloud-btn {
